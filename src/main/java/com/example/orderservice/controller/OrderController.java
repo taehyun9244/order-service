@@ -5,6 +5,7 @@ import com.example.orderservice.model.OrderEntity;
 import com.example.orderservice.service.OrderService;
 import com.example.orderservice.vo.RequestOrder;
 import com.example.orderservice.vo.ResponseOrder;
+import lombok.extern.slf4j.Slf4j;
 import org.modelmapper.ModelMapper;
 import org.modelmapper.convention.MatchingStrategies;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -17,6 +18,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @RestController
+@Slf4j
 @RequestMapping("/order-service")
 public class OrderController {
 
@@ -38,20 +40,25 @@ public class OrderController {
     //주문 생성
     @PostMapping("/{userId}/orders")
     public ResponseEntity<ResponseOrder> creatOrder(@RequestBody RequestOrder orderDetails,
-                                                    @PathVariable String userId){
+                                                    @PathVariable("userId") String userId){
+        log.info("orderDetails={}", orderDetails);
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
+
         OrderDto orderDto = mapper.map(orderDetails, OrderDto.class);
         orderDto.setUserId(userId);
         OrderDto creatOrder = orderService.creatOrder(orderDto);
 
         ResponseOrder responseOrder = mapper.map(creatOrder, ResponseOrder.class);
+        log.info("responseOrder={}", responseOrder);
         return ResponseEntity.status(HttpStatus.CREATED).body(responseOrder);
     }
 
+    //유저별 주문전체 조회
     @GetMapping("/{userId}/orders")
     public ResponseEntity<List<ResponseOrder>> getOrder(@PathVariable String userId){
         Iterable<OrderEntity> orderList = orderService.getOrdersByUserId(userId);
+        log.info("orderList={}", orderList);
 
         List<ResponseOrder> result = new ArrayList<>();
         orderList.forEach(v -> {

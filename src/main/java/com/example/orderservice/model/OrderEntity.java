@@ -1,5 +1,6 @@
 package com.example.orderservice.model;
 
+import lombok.Data;
 import lombok.Getter;
 import org.hibernate.annotations.ColumnDefault;
 
@@ -8,7 +9,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Getter
+@Data
 @Table(name = "orders")
 public class OrderEntity implements Serializable {
 

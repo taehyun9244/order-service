@@ -20,14 +20,19 @@ public class OrderServiceImpl implements OrderService{
     //주문 생성
     @Override
     public OrderDto creatOrder(OrderDto orderDto) {
+        if (orderDto.getProductId() == null && orderDto.getUserId() == null){
+            throw new RuntimeException("주문번호가 없거나 회원이 아닙니다");
+        }
         orderDto.setOrderId(UUID.randomUUID().toString());
         orderDto.setTotalPrice(orderDto.getQty() * orderDto.getUnitPrice());
 
         ModelMapper mapper = new ModelMapper();
         mapper.getConfiguration().setMatchingStrategy(MatchingStrategies.STRICT);
         OrderEntity orderEntity = mapper.map(orderDto, OrderEntity.class);
+        orderRepository.save(orderEntity);
 
         OrderDto result = mapper.map(orderEntity, OrderDto.class);
+        log.info("result={}", result);
 
         return result;
     }
